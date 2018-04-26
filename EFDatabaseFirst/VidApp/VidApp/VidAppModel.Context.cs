@@ -12,6 +12,8 @@ namespace VidApp
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class VidAppEntities : DbContext
     {
@@ -27,5 +29,22 @@ namespace VidApp
     
         public virtual DbSet<Genre> Genres { get; set; }
         public virtual DbSet<Video> Videos { get; set; }
+    
+        public virtual int spAddVideo(string name, Nullable<System.DateTime> releaseDate, string genre)
+        {
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var releaseDateParameter = releaseDate.HasValue ?
+                new ObjectParameter("ReleaseDate", releaseDate) :
+                new ObjectParameter("ReleaseDate", typeof(System.DateTime));
+    
+            var genreParameter = genre != null ?
+                new ObjectParameter("Genre", genre) :
+                new ObjectParameter("Genre", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("spAddVideo", nameParameter, releaseDateParameter, genreParameter);
+        }
     }
 }

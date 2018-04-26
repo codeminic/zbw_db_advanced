@@ -6,17 +6,19 @@ namespace VidApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Type a video title to add it to the database");
+            Console.WriteLine("Type a video movie title and a genre to add it to the database. Example: 'Star Wars - The Force Awakens;Science Fiction'");
 
             do
             {
-                var input = Console.ReadLine();
+                var rawInput = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(input)) break;
+                if (string.IsNullOrWhiteSpace(rawInput)) break;
+                var values = rawInput.Split(';');
+                var movie = values[0];
+                var genre = values[1];
                 using (var context = new VidAppEntities())
                 {
-                    context.Database.Log = Console.Write;
-                    context.Videos.Add(new Video { Name = input, ReleaseDate = DateTime.Now });
+                    context.spAddVideo(movie, DateTime.Now, genre);
                     context.SaveChanges();
                 }
             } while (true);
